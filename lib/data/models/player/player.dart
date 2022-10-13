@@ -1,5 +1,5 @@
 
-import 'package:overcover/src/data/models/player/player_role_state.dart';
+import 'package:overcover/data/models/player/player_role_state.dart';
 
 class Player {
   final int id;

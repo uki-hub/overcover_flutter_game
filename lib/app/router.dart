@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:overcover/app/page_route.dart';
-import 'package:overcover/src/screens/home/home_screen.dart';
-import 'package:overcover/src/screens/lobby/lobby_screen.dart';
+import 'package:overcover/screens/home/home_screen.dart';
+import 'package:overcover/screens/lobby/lobby_screen.dart';
 
 class AppRouter {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {

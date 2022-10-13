@@ -1,6 +1,6 @@
 import 'package:overcover/abstracts/base_roles.dart';
 import 'package:overcover/enums/role_enums.dart';
-import 'package:overcover/src/data/models/role/main_role.dart';
+import 'package:overcover/data/models/role/main_role.dart';
 
 class MainRoles extends BaseRoles<MainRole> {
   static final _mapRoles = {
@@ -37,6 +37,8 @@ class MainRoles extends BaseRoles<MainRole> {
       whenVoted: () => {},
     ),
   };
+
+  MainRoles() : super();
 
   @override
   Map<String, MainRole> get mapRoles => _mapRoles;

@@ -1,12 +1,21 @@
-class LobbySetting {
+class GameSetting {
+  final bool playerKnowTheirRole;
+  
+  final bool justiceIsComputer;
+  
+  final bool mrWhiteCanStartFirst;
+  
   final bool showRoleWhenVoted;
   final bool showVotingStats;
-  final bool playerKnowTheirRole;
-  final bool justiceIsComputer;
-  final bool mrWhiteCanStartFirst;
   final bool noVotingSection;
   
-  const LobbySetting({
+  final bool undercoverGetWordClue;
+  final double howMuchUndercoverGetClueWords;
+  
+  final bool trollOnlyGetOneWord;
+  final double howMuchTrollcoverGetClueWords;
+  
+  const GameSetting({
     required this.showRoleWhenVoted,
     required this.showVotingStats,
     required this.playerKnowTheirRole,

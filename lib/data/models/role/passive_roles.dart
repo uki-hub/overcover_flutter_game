@@ -1,5 +1,5 @@
 import 'package:overcover/abstracts/base_roles.dart';
-import 'package:overcover/src/data/models/role/passive_role.dart';
+import 'package:overcover/data/models/role/passive_role.dart';
 
 class PassiveRoles extends BaseRoles<PassiveRole> {
   static final _mapRoles = {
