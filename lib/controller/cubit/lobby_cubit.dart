@@ -23,5 +23,5 @@ class LobbyCubit extends Cubit<LobbyState> {
   
   void setPassiveRoles(Map<PassiveRole, int> newPassiveRoles) => emit(state.copyWith(selectedPassiveRoles: newPassiveRoles));
 
-  void setGameSettings(GameSetting setting) => emit(state.copyWith(gameSetting: setting));
+  void setGameSettings(GameSettingg setting) => emit(state.copyWith(gameSetting: setting));
 }
