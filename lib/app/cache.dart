@@ -18,6 +18,8 @@ class AppCache {
   }
 
   void set(String key, dynamic value) => _cache[key] = value;
+  
+  void remove(String key) => _cache[key] = null;
 
   void clear() => _cache.clear();
 }

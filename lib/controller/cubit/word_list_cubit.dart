@@ -15,19 +15,20 @@ class WordListCubit extends Cubit<WordListState> {
     final pickedIndexWord = Random().nextInt(unpickedWords.length - 1);
     final pickedWord = unpickedWords[pickedIndexWord];
 
-    useWord(pickedWord);
+    setWordStatus(word: pickedWord, isUsed: true);
 
     return pickedWord;
   }
 
-  void useWord(Word word) {
-    final updatedWord = word.copyWith(isUsed: true);
+  void setWordStatus({required Word word, required bool isUsed}) {
+    final updatedWord = word.copyWith(isUsed: isUsed);
     final updatedWords = state.worldList.toList();
 
     updatedWords[updatedWords.indexWhere((w) => w.no == updatedWord.no)] = updatedWord;
 
     emit(WordListState(updatedWords));
   }
+  
 
   void addWord(String word1, String word2) {
     final updatedWords = state.worldList.toList();

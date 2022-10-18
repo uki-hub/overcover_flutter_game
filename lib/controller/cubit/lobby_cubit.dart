@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
+import 'package:overcover/controller/cubit/play_cubit.dart';
 import 'package:overcover/data/models/lobby/game_setting.dart';
 import 'package:overcover/data/models/player/player.dart';
 import 'package:overcover/data/models/role/main_role.dart';
@@ -9,7 +10,9 @@ import 'package:overcover/data/models/role/passive_role.dart';
 part 'lobby_state.dart';
 
 class LobbyCubit extends Cubit<LobbyState> {
-  LobbyCubit()
+  final PlayCubit playCubit;
+
+  LobbyCubit({required this.playCubit})
       : super(const LobbyState(
           players: [],
           selectedMainRoles: {},
@@ -20,8 +23,10 @@ class LobbyCubit extends Cubit<LobbyState> {
   void setPlayers(List<Player> newPlayers) => emit(state.copyWith(players: newPlayers));
 
   void setMainRoles(Map<MainRole, int> newMainRoles) => emit(state.copyWith(selectedMainRoles: newMainRoles));
-  
+
   void setPassiveRoles(Map<PassiveRole, int> newPassiveRoles) => emit(state.copyWith(selectedPassiveRoles: newPassiveRoles));
 
-  void setGameSettings(GameSettingg setting) => emit(state.copyWith(gameSetting: setting));
+  void setGameSettings(GameSetting setting) => emit(state.copyWith(gameSetting: setting));
+
+  
 }

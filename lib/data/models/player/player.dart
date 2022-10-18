@@ -1,16 +1,17 @@
-
 import 'dart:convert';
+
+import 'package:equatable/equatable.dart';
 
 import 'package:overcover/data/models/player/player_role_stat.dart';
 
-class Player {
+class Player extends Equatable {
   final int id;
   final String name;
   final int totalGames;
   final int points;
   final DateTime playingSince;
   final PlayerRoleStat playerRoleState;
-  
+
   const Player({
     required this.id,
     required this.name,
@@ -19,8 +20,6 @@ class Player {
     required this.playingSince,
     required this.playerRoleState,
   });
-
-  
 
   Player copyWith({
     String? name,
@@ -68,5 +67,10 @@ class Player {
   @override
   String toString() {
     return 'Player(id: $id, name: $name, totalGames: $totalGames, points: $points, playingSince: $playingSince, playerRoleState: $playerRoleState)';
+  }
+
+  @override
+  List<Object> get props {
+    return [id, name];
   }
 }
