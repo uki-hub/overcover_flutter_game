@@ -38,18 +38,12 @@ class GameEngine {
     return GameModel(gamePlayers: preparedPlayers, gameWord: preparedWord);
   }
 
-  List<MapEntry<GamePlayer, List<VotingStat>>> calculateVoting({required List<VotingStat> votingStats}) {
-    final groupedVotingStatByVoteWho = groupBy(votingStats, (s) => s.voteWho);
-    final groupedVotingStatByVoteWhoKeys = groupedVotingStatByVoteWho.keys.toList()
-      ..sort(
-        (a, b) => groupedVotingStatByVoteWho[a]!.length.compareTo(groupedVotingStatByVoteWho[b]!.length),
-      );
+  List<VotingStat> calculateVoting({required List<VotingStat> votingStats}) {
+    final groupedVotingStatByCount = groupBy(votingStats, (s) => s.votedBys.length);
 
-    final orderedGroupedVotingStatByVoteWho = groupedVotingStatByVoteWhoKeys.map((p) => MapEntry(p!, groupedVotingStatByVoteWho[p]!)).toList();
-    final mostVotedPlayer = orderedGroupedVotingStatByVoteWho[0];
-    final playerWhoHasEqualVotingStats = orderedGroupedVotingStatByVoteWho.where((v) => v.value.length == mostVotedPlayer.value.length).toList();
+    final mostVotedPlayers = groupedVotingStatByCount.keys.toSet().toList()..sort(max);
 
-    return playerWhoHasEqualVotingStats;
+    return groupedVotingStatByCount[mostVotedPlayers[0]]!;
   }
 
   /// voted player in the end in array of probabilities
@@ -91,7 +85,7 @@ class GameEngine {
 
       probabilities.addAll(List.generate(multipleBy, (_) => player));
     }
-    
+
     probabilities.shuffle();
 
     final justicedIndex = Random().nextInt(probabilities.length - 1);

@@ -1,8 +1,8 @@
 import 'package:overcover/data/models/play/game_player.dart';
 
 class VotingStat {
-  final GamePlayer player;
-  final GamePlayer? voteWho;
+  final GamePlayer votedPlayer;
+  final List<GamePlayer> votedBys;
 
-  const VotingStat({required this.player, this.voteWho});
+  const VotingStat({required this.votedPlayer, required this.votedBys});
 }

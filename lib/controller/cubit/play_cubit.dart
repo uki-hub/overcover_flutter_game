@@ -68,13 +68,21 @@ class PlayCubit extends Cubit<PlayState> {
   void playerVote({required GamePlayer player, GamePlayer? voteWho}) {
     final _state = (state as PlayerToVoting);
 
-    final updatedVotingStats = _state.votingStats.toList()
-      ..add(VotingStat(
-        player: player,
-        voteWho: voteWho,
-      ));
+    if (voteWho != null) {
+      final updatedVotingStats = _state.votingStats.toList();
+      final votedPlayerIndex = updatedVotingStats.indexWhere((e) => e.votedPlayer.player.id == voteWho.player.id);
 
-    emit(_state.copyWith(votingStats: updatedVotingStats));
+      if (votedPlayerIndex == -1) {
+        updatedVotingStats.add(VotingStat(
+          votedPlayer: voteWho,
+          votedBys: [player],
+        ));
+      } else {
+        updatedVotingStats[votedPlayerIndex].votedBys.add(player);
+      }
+
+      emit(_state.copyWith(votingStats: updatedVotingStats));
+    }
   }
 
   void nextPlayerToVoting() {
@@ -130,7 +138,7 @@ class PlayCubit extends Cubit<PlayState> {
     if (votingStats.length == 1) {
       //VOTE/KICK PLAYER FROM GAME
       emit(VotingResult(
-        votedPlayer: votingStats[0].key,
+        votedPlayer: votingStats[0].votedPlayer,
         votingStats: votingStats[0].value,
         alivePlayers: _state.alivePlayers,
         deathPlayers: _state.deathPlayers,
