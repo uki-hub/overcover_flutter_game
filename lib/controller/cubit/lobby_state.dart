@@ -26,29 +26,6 @@ class LobbyState {
       gameSetting: gameSetting ?? this.gameSetting,
     );
   }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'players': players.map((x) => x.toMap()).toList(),
-      'selectedMainRoles': selectedMainRoles,
-      'selectedPassiveRoles': selectedPassiveRoles,
-      'gameSetting': gameSetting.toMap(),
-    };
-  }
-
-  factory LobbyState.fromMap(Map<String, dynamic> map) {
-    return LobbyState(
-      players: List<Player>.from(map['players']?.map((x) => Player.fromMap(x))),
-      selectedMainRoles: Map<MainRole, int>.from(map['selectedMainRoles']),
-      selectedPassiveRoles: Map<PassiveRole, int>.from(map['selectedPassiveRoles']),
-      gameSetting: GameSetting.fromMap(map['gameSetting']),
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory LobbyState.fromJson(String source) => LobbyState.fromMap(json.decode(source));
-
   @override
   String toString() {
     return 'LobbyState(players: $players, selectedMainRoles: $selectedMainRoles, selectedPassiveRoles: $selectedPassiveRoles, gameSetting: $gameSetting)';

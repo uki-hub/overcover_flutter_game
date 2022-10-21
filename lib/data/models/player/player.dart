@@ -10,7 +10,7 @@ class Player extends Equatable {
   final int totalGames;
   final int points;
   final DateTime playingSince;
-  final PlayerRoleStat playerRoleState;
+  final PlayerRoleStat playerRoleStat;
 
   const Player({
     required this.id,
@@ -18,7 +18,7 @@ class Player extends Equatable {
     required this.totalGames,
     required this.points,
     required this.playingSince,
-    required this.playerRoleState,
+    required this.playerRoleStat,
   });
 
   Player copyWith({
@@ -26,7 +26,7 @@ class Player extends Equatable {
     int? totalGames,
     int? points,
     DateTime? playingSince,
-    PlayerRoleStat? playerRoleState,
+    PlayerRoleStat? playerRoleStat,
   }) {
     return Player(
       id: id,
@@ -34,7 +34,7 @@ class Player extends Equatable {
       totalGames: totalGames ?? this.totalGames,
       points: points ?? this.points,
       playingSince: playingSince ?? this.playingSince,
-      playerRoleState: playerRoleState ?? this.playerRoleState,
+      playerRoleStat: playerRoleStat ?? this.playerRoleStat,
     );
   }
 
@@ -45,7 +45,7 @@ class Player extends Equatable {
       'totalGames': totalGames,
       'points': points,
       'playingSince': playingSince.millisecondsSinceEpoch,
-      'playerRoleState': playerRoleState.toMap(),
+      'playerRoleState': playerRoleStat.toMap(),
     };
   }
 
@@ -56,7 +56,7 @@ class Player extends Equatable {
       totalGames: map['totalGames']?.toInt() ?? 0,
       points: map['points']?.toInt() ?? 0,
       playingSince: DateTime.fromMillisecondsSinceEpoch(map['playingSince']),
-      playerRoleState: PlayerRoleStat.fromMap(map['playerRoleState']),
+      playerRoleStat: PlayerRoleStat.fromMap(map['playerRoleState']),
     );
   }
 
@@ -66,7 +66,7 @@ class Player extends Equatable {
 
   @override
   String toString() {
-    return 'Player(id: $id, name: $name, totalGames: $totalGames, points: $points, playingSince: $playingSince, playerRoleState: $playerRoleState)';
+    return 'Player(id: $id, name: $name, totalGames: $totalGames, points: $points, playingSince: $playingSince, playerRoleState: $playerRoleStat)';
   }
 
   @override

@@ -11,6 +11,25 @@ abstract class PlayState {
     required this.deathPlayers,
     required this.gameSetting,
   });
+
+  GamePlayer get getJustice {
+    final key = '${runtimeType.toString()};justice';
+    GamePlayer? justice = AppCache().get<GamePlayer?>(key);
+
+    if (justice == null) {
+      final players = alivePlayers.toList();
+
+      if (gameSetting.justiceCanVoteAfterBeingVoted) {
+        players.addAll(deathPlayers);
+      }
+
+      justice = players.firstWhere((e) => e.passiveRole?.name == EnumPassiveRole.justice.toString());
+
+      AppCache().set(key, justice);
+    }
+
+    return justice;
+  }
 }
 
 //PREPARE
@@ -97,11 +116,44 @@ class PlayerToVoting extends Voting {
   }
 }
 
-class PickPlayerToBeVoted extends PlayState {}
+class JusticeVotePlayer extends Voting {
+  final GamePlayer justice;
+
+  const JusticeVotePlayer({
+    required this.justice,
+    required super.votingStats,
+    required super.alivePlayers,
+    required super.deathPlayers,
+    required super.gameSetting,
+  });
+}
+
+class ComputerJusticeVotePlayer extends Voting {
+  final List<GamePlayer> justicedPlayers;
+
+  GamePlayer get justicedPlayer => justicedPlayers.last;
+
+  const ComputerJusticeVotePlayer({
+    required this.justicedPlayers,
+    required super.votingStats,
+    required super.alivePlayers,
+    required super.deathPlayers,
+    required super.gameSetting,
+  });
+}
+
+class PickPlayerToBeVoted extends Voting {
+  const PickPlayerToBeVoted({
+    required super.votingStats,
+    required super.alivePlayers,
+    required super.deathPlayers,
+    required super.gameSetting,
+  });
+}
 
 class VotingResult extends Voting {
   final GamePlayer votedPlayer;
-  
+
   const VotingResult({
     required this.votedPlayer,
     required super.votingStats,

@@ -38,22 +38,68 @@ class GameEngine {
     return GameModel(gamePlayers: preparedPlayers, gameWord: preparedWord);
   }
 
-  List<MapEntry<GamePlayer?, List<VotingStat>?>> calculateVoting({required List<VotingStat> votingStats}) {
+  List<MapEntry<GamePlayer, List<VotingStat>>> calculateVoting({required List<VotingStat> votingStats}) {
     final groupedVotingStatByVoteWho = groupBy(votingStats, (s) => s.voteWho);
     final groupedVotingStatByVoteWhoKeys = groupedVotingStatByVoteWho.keys.toList()
       ..sort(
         (a, b) => groupedVotingStatByVoteWho[a]!.length.compareTo(groupedVotingStatByVoteWho[b]!.length),
       );
 
-    final orderedGroupedVotingStatByVoteWho = groupedVotingStatByVoteWhoKeys.map((p) => MapEntry(p, groupedVotingStatByVoteWho[p])).toList();
+    final orderedGroupedVotingStatByVoteWho = groupedVotingStatByVoteWhoKeys.map((p) => MapEntry(p!, groupedVotingStatByVoteWho[p]!)).toList();
     final mostVotedPlayer = orderedGroupedVotingStatByVoteWho[0];
-    final playerWhoHasEqualVotingStats = orderedGroupedVotingStatByVoteWho.where((v) => v.value!.length == mostVotedPlayer.value!.length).toList();
+    final playerWhoHasEqualVotingStats = orderedGroupedVotingStatByVoteWho.where((v) => v.value.length == mostVotedPlayer.value.length).toList();
 
     return playerWhoHasEqualVotingStats;
   }
 
-  GamePLayer computerJustice({required List<GamePlayer> players}) {
-    final shuffledPlayers = players.toList();
+  /// voted player in the end in array of probabilities
+  List<GamePlayer> computerJustice({required List<GamePlayer> players}) {
+    final totalWinRatePool = players.fold<int>(0, (p, e) {
+      if (e.mainRole.category == RoleCategory.good) {
+        return p + e.player.playerRoleStat.totalWinAsGoodRole;
+      } else if (e.mainRole.category == RoleCategory.bad) {
+        return p + e.player.playerRoleStat.totalWinAsBadRole;
+      } else {
+        return p + e.player.playerRoleStat.totalWinAsSoloRole;
+      }
+    });
+
+    final mappedPlayers = players.map((e) {
+      final stat = e.player.playerRoleStat;
+
+      int playerWinRate;
+
+      if (e.mainRole.category == RoleCategory.good) {
+        playerWinRate = ((totalWinRatePool / stat.totalWinAsGoodRole) * 100).round();
+      } else if (e.mainRole.category == RoleCategory.bad) {
+        playerWinRate = ((totalWinRatePool / stat.totalWinAsBadRole) * 100).round();
+      } else {
+        playerWinRate = ((totalWinRatePool / stat.totalWinAsSoloRole) * 100).round();
+      }
+
+      playerWinRate = playerWinRate <= 0 ? 1 : playerWinRate;
+
+      return MapEntry(e, playerWinRate);
+    }).toList()
+      ..sort((a, b) => a.value.compareTo(b.value));
+
+    final probabilities = <GamePlayer>[];
+
+    for (var i = mappedPlayers.length, j = 0; i > 0; i--, j++) {
+      final player = mappedPlayers[j].key;
+      final multipleBy = mappedPlayers[i - 1].value;
+
+      probabilities.addAll(List.generate(multipleBy, (_) => player));
+    }
+    
+    probabilities.shuffle();
+
+    final justicedIndex = Random().nextInt(probabilities.length - 1);
+    final justicedPlayer = probabilities.removeAt(justicedIndex);
+
+    probabilities.add(justicedPlayer);
+
+    return probabilities;
   }
 
   //=== PRIVATE ===

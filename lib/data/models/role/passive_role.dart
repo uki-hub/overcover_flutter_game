@@ -8,12 +8,10 @@ class PassiveRole extends BaseRole {
     required String description,
     required int winPoint,
     required int losePoint,
-    required VoidCallback whenVoted,
   }) : super(
           name: name,
           description: description,
           winPoint: winPoint,
           losePoint: losePoint,
-          whenVoted: whenVoted,
         );
 }

@@ -10,6 +10,7 @@ class GameSetting {
   final bool playerKnowTheirRole;
 
   final bool justiceIsComputer;
+  final bool justiceCanVoteAfterBeingVoted;
 
   final bool mrWhiteCanStartFirst;
 
@@ -32,6 +33,7 @@ class GameSetting {
     required this.passiveRolesInGame,
     required this.playerKnowTheirRole,
     required this.justiceIsComputer,
+    required this.justiceCanVoteAfterBeingVoted,
     required this.mrWhiteCanStartFirst,
     required this.showRoleWhenVoted,
     required this.showVotingStats,
@@ -50,6 +52,7 @@ class GameSetting {
     passiveRolesInGame: [],
     playerKnowTheirRole: false,
     justiceIsComputer: false,
+    justiceCanVoteAfterBeingVoted: false,
     mrWhiteCanStartFirst: false,
     showRoleWhenVoted: true,
     showVotingStats: true,
@@ -68,6 +71,7 @@ class GameSetting {
     List<PassiveRole>? passiveRolesInGame,
     bool? playerKnowTheirRole,
     bool? justiceIsComputer,
+    bool? justiceCanVoteAfterBeingVoted,
     bool? mrWhiteCanStartFirst,
     bool? showRoleWhenVoted,
     bool? showVotingStats,
@@ -85,6 +89,7 @@ class GameSetting {
       passiveRolesInGame: passiveRolesInGame ?? this.passiveRolesInGame,
       playerKnowTheirRole: playerKnowTheirRole ?? this.playerKnowTheirRole,
       justiceIsComputer: justiceIsComputer ?? this.justiceIsComputer,
+      justiceCanVoteAfterBeingVoted: justiceCanVoteAfterBeingVoted ?? this.justiceCanVoteAfterBeingVoted,
       mrWhiteCanStartFirst: mrWhiteCanStartFirst ?? this.mrWhiteCanStartFirst,
       showRoleWhenVoted: showRoleWhenVoted ?? this.showRoleWhenVoted,
       showVotingStats: showVotingStats ?? this.showVotingStats,

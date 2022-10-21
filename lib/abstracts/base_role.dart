@@ -5,13 +5,11 @@ abstract class BaseRole {
   final String description;
   final int winPoint;
   final int losePoint;
-  final void whenVoted;
 
   const BaseRole({
     required this.name,
     required this.description,
     required this.winPoint,
     required this.losePoint,
-    required this.whenVoted,
   });
 }
