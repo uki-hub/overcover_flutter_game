@@ -6,6 +6,7 @@ import 'package:overcover/app/cache.dart';
 import 'package:overcover/controller/cubit/players_cubit.dart';
 import 'package:overcover/controller/cubit/word_list_cubit.dart';
 import 'package:overcover/data/models/lobby/game_setting.dart';
+import 'package:overcover/data/models/play/game_history.dart';
 import 'package:overcover/data/models/play/game_player.dart';
 import 'package:overcover/data/models/play/voting_stat.dart';
 import 'package:overcover/data/models/player/player.dart';
@@ -14,6 +15,9 @@ import 'package:overcover/lib/game_engine.dart';
 import "package:collection/collection.dart";
 
 part 'play_state.dart';
+
+const _getJusticeKey = 'PlayCubit;GetJustice';
+const _getMimeKey = 'PlayCubit;GetMime';
 
 class PlayCubit extends Cubit<PlayState> {
   final GameEngine gameEngine = GameEngine();
@@ -29,11 +33,16 @@ class PlayCubit extends Cubit<PlayState> {
           players: players,
           alivePlayers: [],
           deathPlayers: [],
+          gameHistories: [],
           gameSetting: setting,
         )) {
     _prepareGame();
   }
   //=== PUBLIC ===
+  //PLAYER
+  GamePlayer get getJustice => _getGamePlayerRole(cacheKey: _getJusticeKey, role: EnumPassiveRole.justice, includeDeathPlayers: state.gameSetting.justiceCanVoteAfterBeingVoted);
+  GamePlayer get getMime => _getGamePlayerRole(cacheKey: _getMimeKey, role: EnumPassiveRole.mime);
+
   //PREPARE
   void nextPlayerToGetWord() {
     final _state = state as PlayerGetWordAndRole;
@@ -49,6 +58,7 @@ class PlayCubit extends Cubit<PlayState> {
       emit(PlayerSayTheirWordClue(
         alivePlayers: _state.alivePlayers,
         deathPlayers: _state.deathPlayers,
+        gameHistories: _state.gameHistories,
         gameSetting: _state.gameSetting,
       ));
     }
@@ -62,6 +72,7 @@ class PlayCubit extends Cubit<PlayState> {
         votingStats: [],
         alivePlayers: state.alivePlayers,
         deathPlayers: state.deathPlayers,
+        gameHistories: state.gameHistories,
         gameSetting: state.gameSetting,
       ));
 
@@ -97,16 +108,19 @@ class PlayCubit extends Cubit<PlayState> {
     }
   }
 
-  void votePlayer({required GamePlayer player}) {
-    final _state = state as JusticeVotePlayer;
+  void votePlayer({required GamePlayer votedPlayer}) {
+    final _state = state as Voting;
 
     emit(VotingResult(
-      votedPlayer: player,
+      votedPlayer: votedPlayer,
       votingStats: _state.votingStats,
       alivePlayers: _state.alivePlayers,
       deathPlayers: _state.deathPlayers,
+      gameHistories: _state.gameHistories,
       gameSetting: _state.gameSetting,
     ));
+
+    _postVotedPlayerSection(votedPlayer: votedPlayer);
   }
 
   //=== PRIVATE ===
@@ -126,6 +140,7 @@ class PlayCubit extends Cubit<PlayState> {
       isSeen: false,
       alivePlayers: gameModel.gamePlayers,
       deathPlayers: _state.deathPlayers,
+      gameHistories: _state.gameHistories,
       gameSetting: _state.gameSetting,
     ));
   }
@@ -139,9 +154,10 @@ class PlayCubit extends Cubit<PlayState> {
       //VOTE/KICK PLAYER FROM GAME
       emit(VotingResult(
         votedPlayer: votingStats[0].votedPlayer,
-        votingStats: votingStats[0].value,
+        votingStats: _state.votingStats,
         alivePlayers: _state.alivePlayers,
         deathPlayers: _state.deathPlayers,
+        gameHistories: _state.gameHistories,
         gameSetting: _state.gameSetting,
       ));
     } else if (votingStats.length > 1) {
@@ -149,20 +165,21 @@ class PlayCubit extends Cubit<PlayState> {
         _computerJusticeVote(votingStats: votingStats);
       } else {
         emit(JusticeVotePlayer(
-          justice: _state.getJustice,
+          justice: getJustice,
           votingStats: _state.votingStats,
           alivePlayers: _state.alivePlayers,
           deathPlayers: _state.deathPlayers,
+          gameHistories: _state.gameHistories,
           gameSetting: _state.gameSetting,
         ));
       }
     }
   }
 
-  void _computerJusticeVote({required List<MapEntry<GamePlayer, List<VotingStat>>> votingStats}) {
+  void _computerJusticeVote({required List<VotingStat> votingStats}) {
     final _state = (state as PlayerToVoting);
 
-    final playersToBeJusticed = votingStats.map((e) => e.key).toList();
+    final playersToBeJusticed = votingStats.map((e) => e.votedPlayer).toList();
 
     final justicedPlayers = gameEngine.computerJustice(players: playersToBeJusticed);
 
@@ -171,7 +188,44 @@ class PlayCubit extends Cubit<PlayState> {
       votingStats: _state.votingStats,
       alivePlayers: _state.alivePlayers,
       deathPlayers: _state.deathPlayers,
+      gameHistories: _state.gameHistories,
       gameSetting: _state.gameSetting,
     ));
+  }
+
+  void _postVotedPlayerSection({required GamePlayer votedPlayer}) {
+    final playerRoleName = votedPlayer.passiveRole?.name;
+
+    if (playerRoleName == EnumPassiveRole.assasin.toString()) {
+      emit(Assasin(
+        assasin: votedPlayer,
+        alivePlayers: state.alivePlayers,
+        deathPlayers: state.deathPlayers,
+        gameHistories: state.gameHistories,
+        gameSetting: state.gameSetting,
+      ));
+    } else if (playerRoleName == EnumPassiveRole.couple.toString()) {}
+  }
+
+  GamePlayer _getGamePlayerRole({
+    required String cacheKey,
+    required EnumPassiveRole role,
+    bool includeDeathPlayers = false,
+  }) {
+    GamePlayer? player = AppCache().get<GamePlayer?>(cacheKey);
+
+    if (player == null) {
+      final players = state.alivePlayers.toList();
+
+      if (includeDeathPlayers) {
+        players.addAll(state.deathPlayers);
+      }
+
+      player = players.firstWhere((e) => e.passiveRole?.name == role.toString());
+
+      AppCache().set(cacheKey, player);
+    }
+
+    return player;
   }
 }

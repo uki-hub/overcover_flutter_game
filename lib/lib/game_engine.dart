@@ -46,7 +46,7 @@ class GameEngine {
     return groupedVotingStatByCount[mostVotedPlayers[0]]!;
   }
 
-  /// voted player in the end in array of probabilities
+  /// voted player at the end of array
   List<GamePlayer> computerJustice({required List<GamePlayer> players}) {
     final totalWinRatePool = players.fold<int>(0, (p, e) {
       if (e.mainRole.category == RoleCategory.good) {
